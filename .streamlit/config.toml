@@ -1,6 +1,12 @@
 [theme]
-primaryColor = "#4F46E5"
-backgroundColor = "#0F172A"
-secondaryBackgroundColor = "#1E293B"
-textColor = "#F8FAFC"
-font = "sans serif"
+# 10% Coral (Logo, Buttons, Toggles)
+primaryColor = "#FF6F61"
+
+# 60% Off-White (Main App Canvas)
+backgroundColor = "#F9F8F6"
+
+# 30% Teal (Sidebar Background)
+secondaryBackgroundColor = "#0F766E"
+
+# Dark Slate for high-readability text
+textColor = "#1E293B"

@@ -29,59 +29,89 @@ with st.sidebar:
     st.markdown("---")
     role = st.radio("Access Portal:", ["📱 Consumer Feed", "📊 Merchant Hub", "🛡️ Trust & Safety"])
     st.markdown("---")
-    st.caption("MPB Project Prototype • v1.0")
+    st.caption("MPB Project Prototype • v2.0")
 
 # ==========================================
 # VIEW 1: CONSUMER DISCOVERY FEED
 # ==========================================
 if role == "📱 Consumer Feed":
     st.header("✨ Your Unified Discovery Feed")
-    st.write("Step out of the search bar. Tell us your vibe, and let AI curate your lifestyle.")
     
     # Cold-Start Intake
-    st.markdown("### 🎯 Calibrate Your Taste")
     vibe_selection = st.selectbox(
-        "What is your current mood?",
+        "🎯 Step 1: What is your current mood?",
         ["Productive Focus", "Sci-Fi Late Night", "Weekend Adventure", "Cozy Evening", "Minimalist"]
     )
     st.markdown("---")
     
     valid_products = st.session_state.catalog[~st.session_state.catalog["flagged"]].copy()
-    liked_context = " ".join([item["vibe"] for item in st.session_state.user_likes])
-    query_context = f"{vibe_selection} {liked_context}".strip()
-    
     vectorizer = TfidfVectorizer()
-    corpus = valid_products["vibe"].tolist() + [query_context]
-    tfidf_matrix = vectorizer.fit_transform(corpus)
     
-    sim_scores = cosine_similarity(tfidf_matrix[-1], tfidf_matrix[:-1])[0]
-    valid_products["ai_match_score"] = (sim_scores * 100).round(1)
+    # --- ROW 1: VIBE-BASED RECOMMENDATIONS ---
+    st.subheader(f"🔮 AI Curations for '{vibe_selection}'")
     
+    # Calculate Vibe Match
+    corpus_vibe = valid_products["vibe"].tolist() + [vibe_selection]
+    tfidf_matrix_vibe = vectorizer.fit_transform(corpus_vibe)
+    sim_scores_vibe = cosine_similarity(tfidf_matrix_vibe[-1], tfidf_matrix_vibe[:-1])[0]
+    
+    valid_products["vibe_score"] = (sim_scores_vibe * 100).round(1)
+    # Apply Boost if merchant paid
     valid_products["display_score"] = valid_products.apply(
-        lambda row: row["ai_match_score"] + 10 if row["boosted"] else row["ai_match_score"], axis=1
+        lambda row: row["vibe_score"] + 10 if row["boosted"] else row["vibe_score"], axis=1
     )
-    ranked_feed = valid_products.sort_values(by="display_score", ascending=False)
     
-    st.subheader(f"Curated Matches for '{vibe_selection}'")
-    cols = st.columns(4) # Changed to 4 columns for a better grid look
-    for idx, (_, row) in enumerate(ranked_feed.iterrows()):
-        with cols[idx % 4]:
+    ranked_vibe_feed = valid_products.sort_values(by="display_score", ascending=False).head(4)
+    
+    cols1 = st.columns(4)
+    for idx, (_, row) in enumerate(ranked_vibe_feed.iterrows()):
+        with cols1[idx]:
             with st.container(border=True):
-                st.image(row["image"], use_container_width=True) # THIS ADDS THE IMAGE
+                st.image(row["image"], use_container_width=True)
                 st.markdown(f"**{row['name']}**")
                 st.caption(f"🏬 {row['merchant']}")
-                st.markdown(f"**${row['price']}**")
                 
                 if row["boosted"]:
                     st.info(f"✨ AI Match: {row['display_score']:.1f}% (Sponsored)")
                 else:
                     st.success(f"🎯 AI Match: {row['display_score']:.1f}%")
                 
-                if st.button(f"❤️ Match", key=f"btn_{row['id']}", use_container_width=True):
+                if st.button(f"❤️ Match", key=f"vibe_{row['id']}", use_container_width=True):
                     st.session_state.user_likes.append(row.to_dict())
                     st.session_state.catalog.loc[st.session_state.catalog["id"] == row["id"], "clicks"] += 1
-                    st.toast("Taste Vector updated!", icon="📈")
                     st.rerun()
+
+    # --- ROW 2: ITEM-BASED RECOMMENDATIONS (Appears only after clicking match) ---
+    if len(st.session_state.user_likes) > 0:
+        st.markdown("---")
+        last_liked_item = st.session_state.user_likes[-1]
+        
+        st.subheader(f"🔗 Because you matched with **{last_liked_item['name']}**...")
+        
+        # Calculate Item-to-Item Match
+        corpus_item = valid_products["vibe"].tolist() + [last_liked_item["vibe"]]
+        tfidf_matrix_item = vectorizer.fit_transform(corpus_item)
+        sim_scores_item = cosine_similarity(tfidf_matrix_item[-1], tfidf_matrix_item[:-1])[0]
+        
+        valid_products["item_score"] = (sim_scores_item * 100).round(1)
+        
+        # Filter out the item they just liked so it doesn't recommend itself
+        item_feed = valid_products[valid_products["id"] != last_liked_item["id"]]
+        ranked_item_feed = item_feed.sort_values(by="item_score", ascending=False).head(4)
+        
+        cols2 = st.columns(4)
+        for idx, (_, row) in enumerate(ranked_item_feed.iterrows()):
+            with cols2[idx]:
+                with st.container(border=True):
+                    st.image(row["image"], use_container_width=True)
+                    st.markdown(f"**{row['name']}**")
+                    st.caption(f"Category: {row['category']}")
+                    st.warning(f"🤖 Item Similarity: {row['item_score']}%")
+                    
+                    if st.button(f"❤️ Match", key=f"item_{row['id']}", use_container_width=True):
+                        st.session_state.user_likes.append(row.to_dict())
+                        st.session_state.catalog.loc[st.session_state.catalog["id"] == row["id"], "clicks"] += 1
+                        st.rerun()
 
 # ==========================================
 # VIEW 2: MERCHANT ANALYTICS HUB

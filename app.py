@@ -67,7 +67,7 @@ if role == "📱 Consumer Feed":
     for idx, (_, row) in enumerate(ranked_feed.iterrows()):
         with cols[idx % 4]:
             with st.container(border=True):
-                st.image(row["image"], use_column_width=True) # THIS ADDS THE IMAGE
+                st.image(row["image"], use_container_width=True) # THIS ADDS THE IMAGE
                 st.markdown(f"**{row['name']}**")
                 st.caption(f"🏬 {row['merchant']}")
                 st.markdown(f"**${row['price']}**")

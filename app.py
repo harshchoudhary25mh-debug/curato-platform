@@ -20,47 +20,56 @@ with st.sidebar:
     st.markdown("---")
     role = st.radio("Access Portal:", ["📱 Consumer Feed", "📊 Merchant Hub"])
     st.markdown("---")
-    st.caption("MPB Project Prototype • v5.0 (Dual-Discovery)")
+    st.caption("MPB Project Prototype • v6.0 (Multi-Tier Choice Architecture)")
 
 # ==========================================
 # VIEW 1: TRUE AI CONSUMER DISCOVERY
 # ==========================================
 if role == "📱 Consumer Feed":
     st.header("✨ Infinite AI Discovery Feed")
-    st.write("Search for anything. Curato will find exactly what you need, and then suggest how to complete the vibe.")
+    st.write("Curato builds complete lifestyle bundles with options for every budget.")
     
     user_vibe = st.text_input(
-        "🎯 What are you looking for today?", 
-        placeholder="e.g., Hindi motivational workout songs..."
+        "🎯 What are you planning or looking for today?", 
+        placeholder="e.g., Planning a surprise birthday party..."
     )
     
-    if st.button("Generate My Curato Feed", type="primary") and user_vibe:
-        with st.spinner("🧠 AI is hunting across millions of Indian catalogs to match your vibe..."):
+    if st.button("Curate My Options", type="primary") and user_vibe:
+        with st.spinner("🧠 AI is architecting multi-tier options from Indian catalogs..."):
             
-            # The AI is now instructed to return TWO distinct lists
+            # The AI is now instructed to bundle by Category and offer Price Tiers
             prompt = f"""
             You are Curato, an advanced e-commerce AI designed specifically for the Indian market. 
-            The user searched for: "{user_vibe}".
+            The user's intent is: "{user_vibe}".
             
-            Your job is to provide TWO sets of recommendations in a single JSON response:
-            1. "direct_matches": 4 highly specific items that EXACTLY match the user's primary request category (e.g., if they ask for songs, give 4 songs).
-            2. "cross_domain_matches": 4 highly specific items from DIFFERENT categories (e.g., Apparel, Electronics, Web Series, Health/Fitness) that complement the same mood or activity.
+            Your job is to provide a comprehensive, multi-tiered recommendation bundle. Break down the user's request into exactly 3 logical Categories (e.g., if they are planning a birthday, categories could be Cakes/Food, Music/Entertainment, and Decor/Gifts).
+            
+            Within EACH category, you MUST provide exactly 2 distinct options targeting different budgets:
+            1. A "Value / Free" option (low cost, everyday budget, or free streaming).
+            2. A "Premium / Upgraded" option (luxury, specialized, or physical product purchase).
             
             CRITICAL INSTRUCTIONS:
-            - Ensure items feel authentically Indian, relatable, and culturally relevant.
-            - Pricing MUST be in Indian Rupees (₹).
-            - Format your response STRICTLY as a valid JSON object with the two keys mentioned above.
-            - Do not include markdown formatting, backticks, or the word 'json'.
+            - Ensure items feel authentically Indian and relatable.
+            - Pricing MUST be in Indian Rupees (₹). Use 0 for free digital items.
+            - Format your response STRICTLY as a valid JSON array of objects. Do not include markdown formatting, backticks, or the word 'json'.
             
             Example format:
-            {{
-              "direct_matches": [
-                {{"name": "Kar Har Maidaan Fateh", "category": "Music", "merchant": "Spotify India", "price": 0, "match_score": 99, "emoji": "🎵"}}
-              ],
-              "cross_domain_matches": [
-                {{"name": "NoiseFit Active Smartwatch", "category": "Electronics", "merchant": "Amazon India", "price": 2499, "match_score": 95, "emoji": "⌚"}}
-              ]
-            }}
+            [
+              {{
+                "category_name": "Celebration Cakes",
+                "options": [
+                  {{"name": "1kg Pineapple Cake", "merchant": "Bakingo", "price": 499, "tier": "Value Option", "emoji": "🧁"}},
+                  {{"name": "Custom 2-Tier Truffle Cake", "merchant": "Theobroma", "price": 2499, "tier": "Premium Upgrade", "emoji": "🎂"}}
+                ]
+              }},
+              {{
+                "category_name": "Party Playlists & Music",
+                "options": [
+                  {{"name": "Bollywood Party Anthems", "merchant": "Spotify India", "price": 0, "tier": "Free Streaming", "emoji": "🎵"}},
+                  {{"name": "Portable Party Speaker", "merchant": "Amazon (boAt)", "price": 3499, "tier": "Premium Upgrade", "emoji": "🔊"}}
+                ]
+              }}
+            ]
             """
             
             try:
@@ -72,42 +81,35 @@ if role == "📱 Consumer Feed":
                 
                 ai_data = json.loads(cleaned_response)
                 
-                st.success("Feed Generated!")
+                st.success("Your Curated Options are Ready!")
                 
-                # --- ROW 1: DIRECT MATCHES ---
-                st.subheader("🎯 Direct Matches for your Search")
-                cols_direct = st.columns(4)
-                for idx, item in enumerate(ai_data.get("direct_matches", [])):
-                    with cols_direct[idx]:
-                        with st.container(border=True):
-                            st.markdown(f"## {item.get('emoji', '✨')}")
-                            st.markdown(f"**{item['name']}**")
-                            st.caption(f"Category: {item['category']} | 🏬 {item['merchant']}")
-                            st.markdown(f"**₹{item['price']}**")
-                            st.success(f"🎯 AI Match: {item['match_score']}%")
-                            
-                            if st.button(f"❤️ Match", key=f"dir_btn_{idx}", use_container_width=True):
-                                st.session_state.user_likes.append(item)
-                                st.toast("Item added to your Taste Vector!", icon="📈")
-
-                st.markdown("---")
-                
-                # --- ROW 2: CROSS-DOMAIN DISCOVERY ---
-                st.subheader("✨ Complete the Vibe (Cross-Domain Suggestions)")
-                st.write("Explore complementary items from other categories based on your search intent.")
-                cols_cross = st.columns(4)
-                for idx, item in enumerate(ai_data.get("cross_domain_matches", [])):
-                    with cols_cross[idx]:
-                        with st.container(border=True):
-                            st.markdown(f"## {item.get('emoji', '✨')}")
-                            st.markdown(f"**{item['name']}**")
-                            st.caption(f"Category: {item['category']} | 🏬 {item['merchant']}")
-                            st.markdown(f"**₹{item['price']}**")
-                            st.info(f"💡 AI Vibe Match: {item['match_score']}%")
-                            
-                            if st.button(f"❤️ Match", key=f"cross_btn_{idx}", use_container_width=True):
-                                st.session_state.user_likes.append(item)
-                                st.toast("Item added to your Taste Vector!", icon="📈")
+                # Render the Multi-Tier Choice Architecture
+                for cluster in ai_data:
+                    st.markdown(f"### ✨ {cluster['category_name']}")
+                    cols = st.columns(2)
+                    
+                    for idx, item in enumerate(cluster.get('options', [])):
+                        with cols[idx]:
+                            with st.container(border=True):
+                                # Visually separate the tiers with color tags
+                                if "Premium" in item['tier'] or "Upgrade" in item['tier']:
+                                    st.warning(f"💎 **{item['tier']}**")
+                                else:
+                                    st.success(f"🌱 **{item['tier']}**")
+                                    
+                                st.markdown(f"## {item.get('emoji', '✨')}")
+                                st.markdown(f"**{item['name']}**")
+                                st.caption(f"🏬 {item['merchant']}")
+                                
+                                if item['price'] == 0:
+                                    st.markdown("**₹0 (Free / Ad-Supported)**")
+                                else:
+                                    st.markdown(f"**₹{item['price']}**")
+                                
+                                if st.button(f"❤️ Select {item['tier'].split()[0]}", key=f"btn_{cluster['category_name']}_{idx}", use_container_width=True):
+                                    st.session_state.user_likes.append(item)
+                                    st.toast(f"Added {item['name']} to your plan!", icon="✅")
+                    st.markdown("---")
                                 
             except Exception as e:
                 st.error(f"Something went wrong while parsing the data: {str(e)}")
@@ -115,23 +117,27 @@ if role == "📱 Consumer Feed":
                 st.write(response.text if 'response' in locals() else "No response from AI.")
 
     if len(st.session_state.user_likes) > 0:
-        st.markdown("---")
-        st.subheader("Your Evolving Taste Vector")
+        st.subheader("🛒 Your Selected Bundle")
         for like in st.session_state.user_likes:
-            st.write(f"• **{like['name']}** ({like['category']})")
+            st.write(f"• **{like['name']}** — ₹{like['price']} ({like['merchant']})")
+        
+        total_cost = sum(item['price'] for item in st.session_state.user_likes)
+        st.info(f"**Total Estimated Cart Value: ₹{total_cost}**")
 
 # ==========================================
 # VIEW 2: MERCHANT ANALYTICS HUB
 # ==========================================
 elif role == "📊 Merchant Hub":
     st.header("📈 Merchant Partner Dashboard")
-    st.write("Simulating inbound traffic for registered merchants based on user interactions.")
+    st.write("Simulating inbound traffic and tiered conversion metrics.")
     
     match_count = len(st.session_state.user_likes)
+    premium_matches = sum(1 for item in st.session_state.user_likes if "Premium" in item.get('tier', ''))
+    
     simulated_impressions = (match_count * 1420) + 5400
-    take_rate_revenue = match_count * 125.50
+    take_rate_revenue = sum(item['price'] * 0.05 for item in st.session_state.user_likes)
     
     kpi_col1, kpi_col2, kpi_col3 = st.columns(3)
     kpi_col1.metric("Platform Impressions", f"{simulated_impressions:,}", "+24% AI boost")
-    kpi_col2.metric("Total Match Clicks", f"{match_count}", "Live")
-    kpi_col3.metric("Your Commission Paid", f"₹{take_rate_revenue:,.2f}")
+    kpi_col2.metric("Premium Conversions", f"{premium_matches}", "High Value")
+    kpi_col3.metric("Your Commission Paid (5%)", f"₹{take_rate_revenue:,.2f}")

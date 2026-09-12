@@ -20,40 +20,47 @@ with st.sidebar:
     st.markdown("---")
     role = st.radio("Access Portal:", ["📱 Consumer Feed", "📊 Merchant Hub"])
     st.markdown("---")
-    st.caption("MPB Project Prototype • v4.0 (Localized India)")
+    st.caption("MPB Project Prototype • v5.0 (Dual-Discovery)")
 
 # ==========================================
 # VIEW 1: TRUE AI CONSUMER DISCOVERY
 # ==========================================
 if role == "📱 Consumer Feed":
     st.header("✨ Infinite AI Discovery Feed")
-    st.write("Type literally any vibe. Curato spans Music, Web Series, Apparel, Movies, Comics, and Lifestyle.")
+    st.write("Search for anything. Curato will find exactly what you need, and then suggest how to complete the vibe.")
     
-    # Updated placeholder to feel authentically Indian
     user_vibe = st.text_input(
-        "🎯 Describe your exact mood or vibe right now:", 
-        placeholder="e.g., Monsoon evening craving some North Indian sweets, looking for a relatable web series and cozy apparel..."
+        "🎯 What are you looking for today?", 
+        placeholder="e.g., Hindi motivational workout songs..."
     )
     
     if st.button("Generate My Curato Feed", type="primary") and user_vibe:
         with st.spinner("🧠 AI is hunting across millions of Indian catalogs to match your vibe..."):
             
-            # THE CORE DIFFERENCE: Prompt Engineering for Localization
+            # The AI is now instructed to return TWO distinct lists
             prompt = f"""
             You are Curato, an advanced e-commerce AI designed specifically for the Indian market. 
-            The user's vibe is: "{user_vibe}".
-            Recommend exactly 4 highly specific items across a diverse mix of categories (choose from: Web Series, Movies, Indie Music Playlists, Clothing/Apparel, Comics/Graphic Novels, Home Decor, Electronics) that perfectly match this vibe.
+            The user searched for: "{user_vibe}".
+            
+            Your job is to provide TWO sets of recommendations in a single JSON response:
+            1. "direct_matches": 4 highly specific items that EXACTLY match the user's primary request category (e.g., if they ask for songs, give 4 songs).
+            2. "cross_domain_matches": 4 highly specific items from DIFFERENT categories (e.g., Apparel, Electronics, Web Series, Health/Fitness) that complement the same mood or activity.
             
             CRITICAL INSTRUCTIONS:
-            - Ensure the products, media, and brands feel authentically Indian, relatable, and culturally relevant (e.g., local indie brands, popular Indian streaming shows, relatable ethnic or modern fusion wear).
-            - Pricing MUST be in Indian Rupees (₹) and represent realistic Indian market pricing.
-            - Format your response STRICTLY as a valid JSON array of objects. Do not include any markdown formatting, backticks, or the word 'json'.
+            - Ensure items feel authentically Indian, relatable, and culturally relevant.
+            - Pricing MUST be in Indian Rupees (₹).
+            - Format your response STRICTLY as a valid JSON object with the two keys mentioned above.
+            - Do not include markdown formatting, backticks, or the word 'json'.
             
             Example format:
-            [
-              {{"name": "Panchayat Season 3", "category": "Web Series", "merchant": "Amazon Prime Video", "price": 299, "match_score": 98, "emoji": "📺"}},
-              {{"name": "Oversized Block-Print Cotton Kurta", "category": "Apparel", "merchant": "Myntra", "price": 899, "match_score": 95, "emoji": "👕"}}
-            ]
+            {{
+              "direct_matches": [
+                {{"name": "Kar Har Maidaan Fateh", "category": "Music", "merchant": "Spotify India", "price": 0, "match_score": 99, "emoji": "🎵"}}
+              ],
+              "cross_domain_matches": [
+                {{"name": "NoiseFit Active Smartwatch", "category": "Electronics", "merchant": "Amazon India", "price": 2499, "match_score": 95, "emoji": "⌚"}}
+              ]
+            }}
             """
             
             try:
@@ -63,21 +70,42 @@ if role == "📱 Consumer Feed":
                 if cleaned_response.startswith("```"):
                     cleaned_response = "\n".join(cleaned_response.split("\n")[1:-1])
                 
-                ai_recommendations = json.loads(cleaned_response)
+                ai_data = json.loads(cleaned_response)
                 
                 st.success("Feed Generated!")
-                cols = st.columns(4)
                 
-                for idx, item in enumerate(ai_recommendations):
-                    with cols[idx]:
+                # --- ROW 1: DIRECT MATCHES ---
+                st.subheader("🎯 Direct Matches for your Search")
+                cols_direct = st.columns(4)
+                for idx, item in enumerate(ai_data.get("direct_matches", [])):
+                    with cols_direct[idx]:
                         with st.container(border=True):
                             st.markdown(f"## {item.get('emoji', '✨')}")
                             st.markdown(f"**{item['name']}**")
                             st.caption(f"Category: {item['category']} | 🏬 {item['merchant']}")
-                            st.markdown(f"**₹{item['price']}**") # Changed to Rupees
+                            st.markdown(f"**₹{item['price']}**")
                             st.success(f"🎯 AI Match: {item['match_score']}%")
                             
-                            if st.button(f"❤️ Match", key=f"ai_btn_{idx}", use_container_width=True):
+                            if st.button(f"❤️ Match", key=f"dir_btn_{idx}", use_container_width=True):
+                                st.session_state.user_likes.append(item)
+                                st.toast("Item added to your Taste Vector!", icon="📈")
+
+                st.markdown("---")
+                
+                # --- ROW 2: CROSS-DOMAIN DISCOVERY ---
+                st.subheader("✨ Complete the Vibe (Cross-Domain Suggestions)")
+                st.write("Explore complementary items from other categories based on your search intent.")
+                cols_cross = st.columns(4)
+                for idx, item in enumerate(ai_data.get("cross_domain_matches", [])):
+                    with cols_cross[idx]:
+                        with st.container(border=True):
+                            st.markdown(f"## {item.get('emoji', '✨')}")
+                            st.markdown(f"**{item['name']}**")
+                            st.caption(f"Category: {item['category']} | 🏬 {item['merchant']}")
+                            st.markdown(f"**₹{item['price']}**")
+                            st.info(f"💡 AI Vibe Match: {item['match_score']}%")
+                            
+                            if st.button(f"❤️ Match", key=f"cross_btn_{idx}", use_container_width=True):
                                 st.session_state.user_likes.append(item)
                                 st.toast("Item added to your Taste Vector!", icon="📈")
                                 
@@ -97,14 +125,13 @@ if role == "📱 Consumer Feed":
 # ==========================================
 elif role == "📊 Merchant Hub":
     st.header("📈 Merchant Partner Dashboard")
-    st.write("Since Curato now generates infinite items, this dashboard simulates the inbound traffic for registered merchants.")
+    st.write("Simulating inbound traffic for registered merchants based on user interactions.")
     
-    # Updated simulation metrics for the Indian market scale
     match_count = len(st.session_state.user_likes)
     simulated_impressions = (match_count * 1420) + 5400
-    take_rate_revenue = match_count * 125.50 # Simulated Rupee revenue per match
+    take_rate_revenue = match_count * 125.50
     
     kpi_col1, kpi_col2, kpi_col3 = st.columns(3)
     kpi_col1.metric("Platform Impressions", f"{simulated_impressions:,}", "+24% AI boost")
     kpi_col2.metric("Total Match Clicks", f"{match_count}", "Live")
-    kpi_col3.metric("Your Commission Paid", f"₹{take_rate_revenue:,.2f}") # Changed to Rupees
+    kpi_col3.metric("Your Commission Paid", f"₹{take_rate_revenue:,.2f}")

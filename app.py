@@ -8,7 +8,7 @@ st.set_page_config(page_title="Curato | AI Matchmaking", layout="wide", initial_
 
 # --- Initialize Real AI ---
 genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
-model = genai.GenerativeModel('gemini-1.5-flash')
+model = genai.GenerativeModel('gemini-2.5-flash')
 
 if "user_likes" not in st.session_state:
     st.session_state.user_likes = []

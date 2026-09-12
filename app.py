@@ -18,7 +18,7 @@ with st.sidebar:
     # --- Custom Brand Logo Injection ---
     st.markdown("""
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
-    <div style="display: flex; align-items: center; justify-content: center; padding: 1rem 0 1.5rem 0;">
+   <span style="font-family: 'Pacifico', cursive; font-size: 52px; color: #FF6F61; line-height: 1;">Curato</span>
         <span style="font-family: 'Pacifico', cursive; font-size: 48px; color: #993C1D; line-height: 1;">Curato</span>
     </div>
     """, unsafe_allow_html=True)
@@ -186,7 +186,7 @@ elif role == "📊 Merchant Hub":
         index=["Also looking for Indie Music", "Planning a trip/event", "Buying Tech Gadgets", "Ordering North Indian Food"],
         columns=["Audience Overlap %"]
     )
-    st.bar_chart(chart_data, color="#993C1D") # Matched the chart color to your new logo!
+    st.bar_chart(chart_data, color="#0F766E") # Matched the chart color to your new logo!
     
     st.markdown("---")
     

@@ -186,17 +186,18 @@ elif role == "📊 Merchant Hub":
     
     st.markdown("---")
     
-    # --- MONETIZATION & CAC (Proving the Business Model) ---
+   # --- MONETIZATION & CAC (Proving the Business Model) ---
     st.subheader("⚡ Platform ROI & SaaS Monetization")
-    st.info("Activate Curato+ SaaS Subscription to prioritize your catalog in relevant user vibes and access premium data.")
+    st.info("Curato+ SaaS Subscription: Drive priority AI visibility and access premium data analytics.")
     
     col_a, col_b = st.columns(2)
     with col_a:
         with st.container(border=True):
             st.write("**Subscription Status**")
-            saas_toggle = st.toggle("Enable Curato+ (₹2,999/month)", value=True)
+            st.caption("Early Adopter / Freemium Strategy")
+            saas_toggle = st.toggle("Activate Curato+ (₹999/month)", value=True)
             if saas_toggle:
-                st.success("✅ Active: Catalog receives a +15% AI Match Boost.")
+                st.success("✅ Active: Founder's Tier (First 6 Months FREE). +15% AI Match Boost applied.")
             else:
                 st.warning("❌ Inactive: Standard algorithmic ranking applied.")
                 

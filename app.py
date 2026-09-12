@@ -15,12 +15,18 @@ if "user_likes" not in st.session_state:
 
 # --- Navigation Sidebar ---
 with st.sidebar:
-    st.image("https://cdn-icons-png.flaticon.com/512/1162/1162804.png", width=60)
-    st.title("Curato OS")
+    # --- Custom Brand Logo Injection ---
+    st.markdown("""
+    <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
+    <div style="display: flex; align-items: center; justify-content: center; padding: 1rem 0 1.5rem 0;">
+        <span style="font-family: 'Pacifico', cursive; font-size: 48px; color: #993C1D; line-height: 1;">Curato</span>
+    </div>
+    """, unsafe_allow_html=True)
+    
     st.markdown("---")
     role = st.radio("Access Portal:", ["📱 Consumer Feed", "📊 Merchant Hub"])
     st.markdown("---")
-    st.caption("MPB Project Prototype • v8.1 (Universal Engine)")
+    st.caption("MPB Project Prototype • v9.0 (Custom Branding)")
 
 # ==========================================
 # VIEW 1: TRUE AI CONSUMER DISCOVERY
@@ -80,7 +86,7 @@ if role == "📱 Consumer Feed":
             {filter_instructions}
             
             INSTRUCTIONS:
-            - Break the request into 2 to 4 logical sub-categories. (e.g., If they ask for 'Sci-fi movies', sub-categories could be 'Cyberpunk Thrillers', 'Space Operas', etc. If they ask for an event, sub-categories could be 'Decor', 'Venues', 'Gifts').
+            - Break the request into 2 to 4 logical sub-categories.
             - Within EACH category, provide exactly 3 distinct options.
             - Pricing MUST be in Indian Rupees (₹). Use 0 for free digital items/streaming.
             - Format STRICTLY as a valid JSON array of objects. Do not include markdown formatting or backticks.
@@ -150,6 +156,7 @@ if role == "📱 Consumer Feed":
         
         total_cost = sum(item['price'] for item in st.session_state.user_likes)
         st.info(f"**Total Estimated Value: ₹{total_cost}**")
+
 # ==========================================
 # VIEW 2: MERCHANT ANALYTICS HUB
 # ==========================================
@@ -157,7 +164,6 @@ elif role == "📊 Merchant Hub":
     st.header("📈 Merchant Partner Dashboard")
     st.write("Simulating inbound traffic, CAC reduction, and cross-domain analytics.")
     
-    # --- TOP KPI BANNER ---
     match_count = len(st.session_state.user_likes)
     premium_matches = sum(1 for item in st.session_state.user_likes if any(word in str(item.get('tier', '')).lower() for word in ['premium', 'upgrade', 'collector', 'luxury']))
     
@@ -172,21 +178,18 @@ elif role == "📊 Merchant Hub":
     
     st.markdown("---")
     
-    # --- CROSS-DOMAIN INSIGHTS (Proving the Data Moat) ---
     st.subheader("🕸️ Cross-Domain Audience Insights")
     st.write("Curato's AI reveals what your matched customers are searching for in *other* categories. Use this to design cross-promotions.")
     
-    # Simulated chart data demonstrating cross-category intelligence
     chart_data = pd.DataFrame(
         [45, 25, 20, 10],
         index=["Also looking for Indie Music", "Planning a trip/event", "Buying Tech Gadgets", "Ordering North Indian Food"],
         columns=["Audience Overlap %"]
     )
-    st.bar_chart(chart_data, color="#4F46E5")
+    st.bar_chart(chart_data, color="#993C1D") # Matched the chart color to your new logo!
     
     st.markdown("---")
     
-   # --- MONETIZATION & CAC (Proving the Business Model) ---
     st.subheader("⚡ Platform ROI & SaaS Monetization")
     st.info("Curato+ SaaS Subscription: Drive priority AI visibility and access premium data analytics.")
     
@@ -206,7 +209,6 @@ elif role == "📊 Merchant Hub":
             st.write("**Customer Acquisition Cost (CAC) Analysis**")
             st.metric("Curato CAC vs. Google/Meta Ads", "₹45 per match", "-82% cheaper")
 
-    # --- INVENTORY PREVIEW ---
     st.write("**Your Top Performing AI Matches (Simulated):**")
     merchant_catalog = pd.DataFrame({
         "Product Category": ["Apparel & Fashion", "Home & Decor", "Food & Beverage", "Media & Entertainment"],

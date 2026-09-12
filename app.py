@@ -20,54 +20,67 @@ with st.sidebar:
     st.markdown("---")
     role = st.radio("Access Portal:", ["📱 Consumer Feed", "📊 Merchant Hub"])
     st.markdown("---")
-    st.caption("MPB Project Prototype • v7.0 (Personalized Budget Engine)")
+    st.caption("MPB Project Prototype • v8.0 (Hyper-Personalized)")
 
 # ==========================================
 # VIEW 1: TRUE AI CONSUMER DISCOVERY
 # ==========================================
 if role == "📱 Consumer Feed":
     st.header("✨ Infinite AI Discovery Feed")
-    st.write("Curato builds complete lifestyle bundles tailored to your exact budget.")
+    st.write("Set your exact preferences. Curato builds complete lifestyle bundles tailored to you.")
     
-    # 2-Step Personalized Onboarding
-    col1, col2 = st.columns(2)
-    with col1:
-        user_vibe = st.text_input("🎯 What are you planning?", placeholder="e.g., Planning to propose to my girlfriend...")
-    with col2:
-        user_budget = st.selectbox(
-            "💰 What is your total budget range?", 
-            ["Under ₹5,000", "₹5,000 - ₹15,000", "₹15,000 - ₹50,000", "₹50,000+", "No Limit"]
-        )
+    # 1. Primary Intent
+    user_vibe = st.text_input("🎯 What are you planning or looking for?", placeholder="e.g., Planning to propose to my girlfriend, or hosting a weekend get-together...")
     
+    # 2. Advanced Personalization Filters (Collapsible for clean UI)
+    with st.expander("⚙️ Advanced Personalization Filters", expanded=True):
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            user_budget = st.selectbox(
+                "💰 Total Budget Range", 
+                ["Under ₹1,000", "₹1,000 - ₹5,000", "₹5,000 - ₹15,000", "₹15,000 - ₹50,000", "₹50,000+", "No Limit"]
+            )
+            user_location = st.text_input("📍 City / Location Context", placeholder="e.g., Hyderabad, Mumbai, New Delhi...")
+            
+        with col2:
+            user_timeline = st.selectbox(
+                "⏳ Urgency / Timeline",
+                ["Need it today (Local/Digital only)", "Within a few days", "Planning ahead (Standard shipping fine)"]
+            )
+            user_context = st.text_area("specific Tastes & Preferences", placeholder="e.g., Prefer North Indian food, love minimalist aesthetics, prefer buying from Amazon or Swiggy...", height=68)
+            
     if st.button("Curate My Options", type="primary") and user_vibe:
-        with st.spinner(f"🧠 AI is architecting 3-tier options within the {user_budget} range..."):
+        with st.spinner(f"🧠 AI is architecting options for {user_budget} in {user_location if user_location else 'your area'}..."):
             
-            # The AI is now instructed to generate 4-5 categories with 3 tiers each
+            # The AI prompt now integrates ALL filters
             prompt = f"""
-            You are Curato, an advanced e-commerce AI designed specifically for the Indian market. 
-            The user is planning: "{user_vibe}". Their total budget constraint is: "{user_budget}".
+            You are Curato, an advanced e-commerce AI designed for the Indian market. 
             
-            Provide a comprehensive recommendation bundle covering at least 4 to 5 distinct categories (e.g., Rings/Gifts, Venues/Dinner, Decor/Flowers, Outfits/Apparel, Music/Entertainment).
+            USER PROFILE & CONSTRAINTS:
+            - Goal: "{user_vibe}"
+            - Total Budget: "{user_budget}"
+            - Location: "{user_location if user_location else 'India'}"
+            - Timeline: "{user_timeline}"
+            - Specific Tastes: "{user_context}"
             
-            Within EACH category, you MUST provide exactly 3 options targeting different slices of their specific budget:
-            1. "Value" (Cost-effective, highly affordable)
-            2. "Mid-Range" (The sweet spot, balanced quality and price)
-            3. "Premium" (The top end of their stated budget)
+            Provide a comprehensive recommendation bundle covering 4 to 5 distinct categories relevant to their goal.
             
-            CRITICAL INSTRUCTIONS:
-            - Keep ALL prices strictly within the user's total budget of {user_budget}.
-            - Ensure items feel authentically Indian and relatable.
-            - Pricing MUST be in Indian Rupees (₹). Use 0 for free digital items.
-            - Format your response STRICTLY as a valid JSON array of objects. Do not include markdown formatting, backticks, or the word 'json'.
+            CRITICAL FILTER INSTRUCTIONS:
+            - BUDGET: You MUST provide exactly 3 options per category (Value, Mid-Range, Premium) that fit within the {user_budget} total limit.
+            - LOCATION/TIMELINE: If the timeline is "today", only suggest local venues in {user_location}, digital goods, or rapid delivery services (like Zomato/Blinkit). Do not suggest standard e-commerce shipping.
+            - TASTES: Heavily weigh their specific tastes ({user_context}) when selecting merchants, cuisines, and aesthetics.
+            - Pricing MUST be in Indian Rupees (₹).
+            - Format STRICTLY as a valid JSON array of objects. Do not include markdown formatting or backticks.
             
             Example format:
             [
               {{
-                "category_name": "Romantic Dinner & Venue",
+                "category_name": "Venue & Dining",
                 "options": [
-                  {{"name": "Cozy Cafe Table Setup", "merchant": "Local Cafe", "price": 1500, "tier": "Value", "emoji": "☕"}},
-                  {{"name": "Rooftop Candlelight Dinner", "merchant": "District Dining", "price": 4000, "tier": "Mid-Range", "emoji": "🍽️"}},
-                  {{"name": "Luxury 5-Star Cabana", "merchant": "Taj Hotels", "price": 12000, "tier": "Premium", "emoji": "🏰"}}
+                  {{"name": "Local Cafe Reservation", "merchant": "Zomato Dine-in", "price": 800, "tier": "Value", "emoji": "☕"}},
+                  {{"name": "Premium Rooftop Table", "merchant": "District Dining", "price": 3000, "tier": "Mid-Range", "emoji": "🍽️"}},
+                  {{"name": "Luxury Hotel Cabana", "merchant": "Taj Hotels", "price": 8000, "tier": "Premium", "emoji": "🏰"}}
                 ]
               }}
             ]
@@ -84,15 +97,13 @@ if role == "📱 Consumer Feed":
                 
                 st.success("Your Personalized Options are Ready!")
                 
-                # Render the 3-Tier Choice Architecture
                 for cluster in ai_data:
                     st.markdown(f"### ✨ {cluster['category_name']}")
-                    cols = st.columns(3) # Changed to 3 columns
+                    cols = st.columns(3)
                     
                     for idx, item in enumerate(cluster.get('options', [])[:3]):
                         with cols[idx]:
                             with st.container(border=True):
-                                # Visually separate the tiers with distinct colors
                                 if "Premium" in item['tier'] or "Upgrade" in item['tier']:
                                     st.warning(f"💎 **{item['tier']}**")
                                 elif "Mid-Range" in item['tier'] or "Sweet Spot" in item['tier']:

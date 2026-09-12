@@ -20,35 +20,42 @@ with st.sidebar:
     st.markdown("---")
     role = st.radio("Access Portal:", ["📱 Consumer Feed", "📊 Merchant Hub"])
     st.markdown("---")
-    st.caption("MPB Project Prototype • v6.0 (Multi-Tier Choice Architecture)")
+    st.caption("MPB Project Prototype • v7.0 (Personalized Budget Engine)")
 
 # ==========================================
 # VIEW 1: TRUE AI CONSUMER DISCOVERY
 # ==========================================
 if role == "📱 Consumer Feed":
     st.header("✨ Infinite AI Discovery Feed")
-    st.write("Curato builds complete lifestyle bundles with options for every budget.")
+    st.write("Curato builds complete lifestyle bundles tailored to your exact budget.")
     
-    user_vibe = st.text_input(
-        "🎯 What are you planning or looking for today?", 
-        placeholder="e.g., Planning a surprise birthday party..."
-    )
+    # 2-Step Personalized Onboarding
+    col1, col2 = st.columns(2)
+    with col1:
+        user_vibe = st.text_input("🎯 What are you planning?", placeholder="e.g., Planning to propose to my girlfriend...")
+    with col2:
+        user_budget = st.selectbox(
+            "💰 What is your total budget range?", 
+            ["Under ₹5,000", "₹5,000 - ₹15,000", "₹15,000 - ₹50,000", "₹50,000+", "No Limit"]
+        )
     
     if st.button("Curate My Options", type="primary") and user_vibe:
-        with st.spinner("🧠 AI is architecting multi-tier options from Indian catalogs..."):
+        with st.spinner(f"🧠 AI is architecting 3-tier options within the {user_budget} range..."):
             
-            # The AI is now instructed to bundle by Category and offer Price Tiers
+            # The AI is now instructed to generate 4-5 categories with 3 tiers each
             prompt = f"""
             You are Curato, an advanced e-commerce AI designed specifically for the Indian market. 
-            The user's intent is: "{user_vibe}".
+            The user is planning: "{user_vibe}". Their total budget constraint is: "{user_budget}".
             
-            Your job is to provide a comprehensive, multi-tiered recommendation bundle. Break down the user's request into exactly 3 logical Categories (e.g., if they are planning a birthday, categories could be Cakes/Food, Music/Entertainment, and Decor/Gifts).
+            Provide a comprehensive recommendation bundle covering at least 4 to 5 distinct categories (e.g., Rings/Gifts, Venues/Dinner, Decor/Flowers, Outfits/Apparel, Music/Entertainment).
             
-            Within EACH category, you MUST provide exactly 2 distinct options targeting different budgets:
-            1. A "Value / Free" option (low cost, everyday budget, or free streaming).
-            2. A "Premium / Upgraded" option (luxury, specialized, or physical product purchase).
+            Within EACH category, you MUST provide exactly 3 options targeting different slices of their specific budget:
+            1. "Value" (Cost-effective, highly affordable)
+            2. "Mid-Range" (The sweet spot, balanced quality and price)
+            3. "Premium" (The top end of their stated budget)
             
             CRITICAL INSTRUCTIONS:
+            - Keep ALL prices strictly within the user's total budget of {user_budget}.
             - Ensure items feel authentically Indian and relatable.
             - Pricing MUST be in Indian Rupees (₹). Use 0 for free digital items.
             - Format your response STRICTLY as a valid JSON array of objects. Do not include markdown formatting, backticks, or the word 'json'.
@@ -56,17 +63,11 @@ if role == "📱 Consumer Feed":
             Example format:
             [
               {{
-                "category_name": "Celebration Cakes",
+                "category_name": "Romantic Dinner & Venue",
                 "options": [
-                  {{"name": "1kg Pineapple Cake", "merchant": "Bakingo", "price": 499, "tier": "Value Option", "emoji": "🧁"}},
-                  {{"name": "Custom 2-Tier Truffle Cake", "merchant": "Theobroma", "price": 2499, "tier": "Premium Upgrade", "emoji": "🎂"}}
-                ]
-              }},
-              {{
-                "category_name": "Party Playlists & Music",
-                "options": [
-                  {{"name": "Bollywood Party Anthems", "merchant": "Spotify India", "price": 0, "tier": "Free Streaming", "emoji": "🎵"}},
-                  {{"name": "Portable Party Speaker", "merchant": "Amazon (boAt)", "price": 3499, "tier": "Premium Upgrade", "emoji": "🔊"}}
+                  {{"name": "Cozy Cafe Table Setup", "merchant": "Local Cafe", "price": 1500, "tier": "Value", "emoji": "☕"}},
+                  {{"name": "Rooftop Candlelight Dinner", "merchant": "District Dining", "price": 4000, "tier": "Mid-Range", "emoji": "🍽️"}},
+                  {{"name": "Luxury 5-Star Cabana", "merchant": "Taj Hotels", "price": 12000, "tier": "Premium", "emoji": "🏰"}}
                 ]
               }}
             ]
@@ -81,19 +82,21 @@ if role == "📱 Consumer Feed":
                 
                 ai_data = json.loads(cleaned_response)
                 
-                st.success("Your Curated Options are Ready!")
+                st.success("Your Personalized Options are Ready!")
                 
-                # Render the Multi-Tier Choice Architecture
+                # Render the 3-Tier Choice Architecture
                 for cluster in ai_data:
                     st.markdown(f"### ✨ {cluster['category_name']}")
-                    cols = st.columns(2)
+                    cols = st.columns(3) # Changed to 3 columns
                     
-                    for idx, item in enumerate(cluster.get('options', [])):
+                    for idx, item in enumerate(cluster.get('options', [])[:3]):
                         with cols[idx]:
                             with st.container(border=True):
-                                # Visually separate the tiers with color tags
+                                # Visually separate the tiers with distinct colors
                                 if "Premium" in item['tier'] or "Upgrade" in item['tier']:
                                     st.warning(f"💎 **{item['tier']}**")
+                                elif "Mid-Range" in item['tier'] or "Sweet Spot" in item['tier']:
+                                    st.info(f"🎯 **{item['tier']}**")
                                 else:
                                     st.success(f"🌱 **{item['tier']}**")
                                     
@@ -102,11 +105,11 @@ if role == "📱 Consumer Feed":
                                 st.caption(f"🏬 {item['merchant']}")
                                 
                                 if item['price'] == 0:
-                                    st.markdown("**₹0 (Free / Ad-Supported)**")
+                                    st.markdown("**₹0 (Free)**")
                                 else:
                                     st.markdown(f"**₹{item['price']}**")
                                 
-                                if st.button(f"❤️ Select {item['tier'].split()[0]}", key=f"btn_{cluster['category_name']}_{idx}", use_container_width=True):
+                                if st.button(f"❤️ Select", key=f"btn_{cluster['category_name']}_{idx}", use_container_width=True):
                                     st.session_state.user_likes.append(item)
                                     st.toast(f"Added {item['name']} to your plan!", icon="✅")
                     st.markdown("---")
@@ -133,11 +136,13 @@ elif role == "📊 Merchant Hub":
     
     match_count = len(st.session_state.user_likes)
     premium_matches = sum(1 for item in st.session_state.user_likes if "Premium" in item.get('tier', ''))
+    mid_matches = sum(1 for item in st.session_state.user_likes if "Mid" in item.get('tier', ''))
     
     simulated_impressions = (match_count * 1420) + 5400
     take_rate_revenue = sum(item['price'] * 0.05 for item in st.session_state.user_likes)
     
-    kpi_col1, kpi_col2, kpi_col3 = st.columns(3)
+    kpi_col1, kpi_col2, kpi_col3, kpi_col4 = st.columns(4)
     kpi_col1.metric("Platform Impressions", f"{simulated_impressions:,}", "+24% AI boost")
-    kpi_col2.metric("Premium Conversions", f"{premium_matches}", "High Value")
-    kpi_col3.metric("Your Commission Paid (5%)", f"₹{take_rate_revenue:,.2f}")
+    kpi_col2.metric("Mid-Range Conversions", f"{mid_matches}", "Core Segment")
+    kpi_col3.metric("Premium Conversions", f"{premium_matches}", "High Value")
+    kpi_col4.metric("Your Commission Paid", f"₹{take_rate_revenue:,.2f}")

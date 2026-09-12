@@ -1,12 +1,12 @@
 [theme]
-# 10% Coral (Logo, Buttons, Toggles)
-primaryColor = "#FF6F61"
+# Vibrant Coral for the Logo and Primary Action Buttons
+primaryColor = "#FF6B6B"
 
-# 60% Off-White (Main App Canvas)
-backgroundColor = "#F9F8F6"
+# Midnight Slate for the main app canvas (deep, rich, modern)
+backgroundColor = "#0B0F19"
 
-# 30% Teal (Sidebar Background)
-secondaryBackgroundColor = "#0F766E"
+# Slightly lighter slate for the Sidebar and Text Input boxes
+secondaryBackgroundColor = "#1C2333"
 
-# Dark Slate for high-readability text
-textColor = "#1E293B"
+# Crisp Off-White for maximum readability
+textColor = "#F8FAFC"

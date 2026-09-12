@@ -150,14 +150,14 @@ if role == "📱 Consumer Feed":
         
         total_cost = sum(item['price'] for item in st.session_state.user_likes)
         st.info(f"**Total Estimated Value: ₹{total_cost}**")
-
 # ==========================================
 # VIEW 2: MERCHANT ANALYTICS HUB
 # ==========================================
 elif role == "📊 Merchant Hub":
     st.header("📈 Merchant Partner Dashboard")
-    st.write("Simulating inbound traffic and tiered conversion metrics.")
+    st.write("Simulating inbound traffic, CAC reduction, and cross-domain analytics.")
     
+    # --- TOP KPI BANNER ---
     match_count = len(st.session_state.user_likes)
     premium_matches = sum(1 for item in st.session_state.user_likes if any(word in str(item.get('tier', '')).lower() for word in ['premium', 'upgrade', 'collector', 'luxury']))
     
@@ -169,3 +169,48 @@ elif role == "📊 Merchant Hub":
     kpi_col2.metric("Total Matches", f"{match_count}", "Active")
     kpi_col3.metric("Premium Conversions", f"{premium_matches}", "High Value")
     kpi_col4.metric("Your Commission Paid", f"₹{take_rate_revenue:,.2f}")
+    
+    st.markdown("---")
+    
+    # --- CROSS-DOMAIN INSIGHTS (Proving the Data Moat) ---
+    st.subheader("🕸️ Cross-Domain Audience Insights")
+    st.write("Curato's AI reveals what your matched customers are searching for in *other* categories. Use this to design cross-promotions.")
+    
+    # Simulated chart data demonstrating cross-category intelligence
+    chart_data = pd.DataFrame(
+        [45, 25, 20, 10],
+        index=["Also looking for Indie Music", "Planning a trip/event", "Buying Tech Gadgets", "Ordering North Indian Food"],
+        columns=["Audience Overlap %"]
+    )
+    st.bar_chart(chart_data, color="#4F46E5")
+    
+    st.markdown("---")
+    
+    # --- MONETIZATION & CAC (Proving the Business Model) ---
+    st.subheader("⚡ Platform ROI & SaaS Monetization")
+    st.info("Activate Curato+ SaaS Subscription to prioritize your catalog in relevant user vibes and access premium data.")
+    
+    col_a, col_b = st.columns(2)
+    with col_a:
+        with st.container(border=True):
+            st.write("**Subscription Status**")
+            saas_toggle = st.toggle("Enable Curato+ (₹2,999/month)", value=True)
+            if saas_toggle:
+                st.success("✅ Active: Catalog receives a +15% AI Match Boost.")
+            else:
+                st.warning("❌ Inactive: Standard algorithmic ranking applied.")
+                
+    with col_b:
+        with st.container(border=True):
+            st.write("**Customer Acquisition Cost (CAC) Analysis**")
+            st.metric("Curato CAC vs. Google/Meta Ads", "₹45 per match", "-82% cheaper")
+
+    # --- INVENTORY PREVIEW ---
+    st.write("**Your Top Performing AI Matches (Simulated):**")
+    merchant_catalog = pd.DataFrame({
+        "Product Category": ["Apparel & Fashion", "Home & Decor", "Food & Beverage", "Media & Entertainment"],
+        "AI Impressions": ["2,450", "1,890", "3,100", "1,200"],
+        "Match Rate": ["6.2%", "5.8%", "8.1%", "4.5%"],
+        "Take-Rate (5%) Paid": ["₹1,250", "₹890", "₹2,100", "₹450"]
+    })
+    st.dataframe(merchant_catalog, use_container_width=True, hide_index=True)

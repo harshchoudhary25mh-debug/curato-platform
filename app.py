@@ -15,18 +15,18 @@ if "user_likes" not in st.session_state:
 
 # --- Navigation Sidebar ---
 with st.sidebar:
-    # --- Custom Brand Logo Injection ---
+    # --- Custom Brand Logo Injection (Strictly ONE Logo) ---
     st.markdown("""
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
-   <span style="font-family: 'Pacifico', cursive; font-size: 52px; color: #FF6F61; line-height: 1;">Curato</span>
-        <span style="font-family: 'Pacifico', cursive; font-size: 48px; color: #993C1D; line-height: 1;">Curato</span>
+    <div style="display: flex; align-items: center; justify-content: center; padding: 1rem 0 1.5rem 0;">
+        <span style="font-family: 'Pacifico', cursive; font-size: 52px; color: #FF6B6B; line-height: 1;">Curato</span>
     </div>
     """, unsafe_allow_html=True)
     
     st.markdown("---")
     role = st.radio("Access Portal:", ["📱 Consumer Feed", "📊 Merchant Hub"])
     st.markdown("---")
-    st.caption("MPB Project Prototype • v9.0 (Custom Branding)")
+    st.caption("MPB Project Prototype • v9.1 (Visual Overhaul)")
 
 # ==========================================
 # VIEW 1: TRUE AI CONSUMER DISCOVERY
@@ -35,13 +35,11 @@ if role == "📱 Consumer Feed":
     st.header("✨ Infinite AI Discovery Feed")
     st.write("Search for anything from movie night to event planning. Use filters only if you need them.")
     
-    # Broad, universal placeholder
     user_vibe = st.text_input(
         "🎯 What are you looking for today?", 
         placeholder="e.g., Sci-fi movies to binge watch, Monsoon reading list, or Planning a birthday..."
     )
     
-    # Filters are now COLLAPSED by default and completely optional
     with st.expander("⚙️ Advanced Personalization Filters (Optional)", expanded=False):
         col1, col2 = st.columns(2)
         
@@ -62,7 +60,6 @@ if role == "📱 Consumer Feed":
     if st.button("Curate My Options", type="primary") and user_vibe:
         with st.spinner("🧠 AI is hunting across millions of catalogs to match your vibe..."):
             
-            # Dynamically build filter instructions ONLY if the user used them
             filter_instructions = ""
             if user_budget != "Any Budget":
                 filter_instructions += f"\n- BUDGET: Must fit within {user_budget}. Provide Value, Mid-Range, and Premium tiers."
@@ -78,7 +75,6 @@ if role == "📱 Consumer Feed":
             if user_context:
                 filter_instructions += f"\n- TASTES: Strictly incorporate these preferences: {user_context}."
 
-            # The AI prompt adapts to broad searches (like just movies) or complex ones (like events)
             prompt = f"""
             You are Curato, an advanced e-commerce AI designed for the Indian market. 
             
@@ -122,7 +118,6 @@ if role == "📱 Consumer Feed":
                     for idx, item in enumerate(cluster.get('options', [])[:3]):
                         with cols[idx]:
                             with st.container(border=True):
-                                # Dynamic color tags based on keywords
                                 if any(word in str(item.get('tier', '')).lower() for word in ['premium', 'upgrade', 'collector', 'luxury']):
                                     st.warning(f"💎 **{item.get('tier', 'Option')}**")
                                 elif any(word in str(item.get('tier', '')).lower() for word in ['mid', 'standard', 'sweet']):
@@ -186,7 +181,8 @@ elif role == "📊 Merchant Hub":
         index=["Also looking for Indie Music", "Planning a trip/event", "Buying Tech Gadgets", "Ordering North Indian Food"],
         columns=["Audience Overlap %"]
     )
-    st.bar_chart(chart_data, color="#0F766E") # Matched the chart color to your new logo!
+    # Chart color matched to the Coral theme
+    st.bar_chart(chart_data, color="#FF6B6B") 
     
     st.markdown("---")
     

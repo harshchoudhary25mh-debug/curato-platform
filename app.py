@@ -255,17 +255,17 @@ with tab_team:
     with c1:
         st.info("🎯 **Harsh Choudhary**\n\n*Team Lead & Platform Strategist*\n\n[🔗 Connect on LinkedIn](https://www.linkedin.com/in/harsh-choudhary-040291208/)")
     with c2:
-        st.info("💻 **[Bhavya Bajpai]**\n\n*Product Manager*\n\n[🔗 Connect on LinkedIn](https://www.linkedin.com/in/bhavya-bajpai-1ab399377)")
+        st.info("💻 **Bhavya Bajpai**\n\n*Product Manager*\n\n[🔗 Connect on LinkedIn](https://www.linkedin.com/in/bhavya-bajpai-1ab399377)")
     with c3:
-        st.info("🤝 **[Vanshika Saxena]**\n\n*B2B Merchant Ecosystem*\n\n[🔗 Connect on LinkedIn](https://www.linkedin.com/in/vanshika-saxena-070bb3212?utm_source=share_via&utm_content=profile&utm_medium=member_android)")
+        st.info("🤝 **Vanshika Saxena**\n\n*B2B Merchant Ecosystem*\n\n[🔗 Connect on LinkedIn](https://www.linkedin.com/in/vanshika-saxena-070bb3212?utm_source=share_via&utm_content=profile&utm_medium=member_android)")
         
     st.markdown("<br>", unsafe_allow_html=True)
     
     spacer1, c4, c5, spacer2 = st.columns([1, 2, 2, 1])
     with c4:
-        st.info("🎨 **[Anjali Gupta]**\n\n*UI/UX & Consumer Psychology*\n\n[🔗 Connect on LinkedIn](https://www.linkedin.com/in/anjali-gupta-80851026b?utm_source=share_via&utm_content=profile&utm_medium=member_android)")
+        st.info("🎨 **Anjali Gupta**\n\n*UI/UX & Consumer Psychology*\n\n[🔗 Connect on LinkedIn](https://www.linkedin.com/in/anjali-gupta-80851026b?utm_source=share_via&utm_content=profile&utm_medium=member_android)")
     with c5:
-        st.info("⚙️ **[Pooja Mohta]**\n\n*Platform Operations*\n\n[🔗 Connect on LinkedIn](https://www.linkedin.com/in/pooja-mohta-9415201ab/)")
+        st.info("⚙️ **Pooja Mohta**\n\n*Platform Operations*\n\n[🔗 Connect on LinkedIn](https://www.linkedin.com/in/pooja-mohta-9415201ab/)")
         
     st.markdown("---")
     st.caption("Built with Python, Streamlit, and Google Gemini AI.")

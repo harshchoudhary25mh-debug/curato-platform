@@ -13,9 +13,8 @@ model = genai.GenerativeModel('gemini-3.6-flash')
 if "user_likes" not in st.session_state:
     st.session_state.user_likes = []
 
-# --- Navigation Sidebar ---
+# --- Premium Branding Sidebar ---
 with st.sidebar:
-    # --- Custom Brand Logo Injection ---
     st.markdown("""
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <div style="display: flex; align-items: center; justify-content: center; padding: 1rem 0 1.5rem 0;">
@@ -24,14 +23,21 @@ with st.sidebar:
     """, unsafe_allow_html=True)
     
     st.markdown("---")
-    role = st.radio("Navigation:", ["🏠 Platform Home", "📱 Consumer Feed", "📊 Merchant Hub", "👥 About the Team"])
-    st.markdown("---")
     st.caption("MPB Project Prototype • Final Build")
+    st.write("An AI-powered matchmaking platform designed to eliminate choice overload and lower CAC.")
+
+# --- HORIZONTAL TAB NAVIGATION ---
+tab_home, tab_consumer, tab_merchant, tab_team = st.tabs([
+    "🏠 Platform Home", 
+    "📱 Consumer Feed", 
+    "📊 Merchant Hub", 
+    "👥 About the Team"
+])
 
 # ==========================================
 # VIEW 1: PLATFORM HOME (LANDING PAGE)
 # ==========================================
-if role == "🏠 Platform Home":
+with tab_home:
     st.header("Welcome to the 'Everything' Discovery Engine")
     st.write("Curato is a hyper-personalized, two-sided AI matchmaking platform designed to eliminate choice overload for consumers while radically lowering Customer Acquisition Cost (CAC) for merchants.")
     
@@ -49,12 +55,12 @@ if role == "🏠 Platform Home":
             st.write("Independent D2C brands face **unsustainable ad costs** on traditional search engines and social media. Curato offers a frictionless freemium SaaS model, matching merchants directly to high-intent buyers.")
             
     st.markdown("---")
-    st.info("👈 **Use the sidebar to explore the Consumer Feed or the Merchant Analytics Hub.**")
+    st.info("👆 **Use the tabs at the top of the screen to explore the Consumer Feed or the Merchant Analytics Hub.**")
 
 # ==========================================
 # VIEW 2: TRUE AI CONSUMER DISCOVERY
 # ==========================================
-elif role == "📱 Consumer Feed":
+with tab_consumer:
     st.header("✨ Infinite AI Discovery Feed")
     st.write("Search for anything from movie night to event planning. Use filters only if you need them.")
     
@@ -178,7 +184,7 @@ elif role == "📱 Consumer Feed":
 # ==========================================
 # VIEW 3: MERCHANT ANALYTICS HUB
 # ==========================================
-elif role == "📊 Merchant Hub":
+with tab_merchant:
     st.header("📈 Merchant Partner Dashboard")
     st.write("Simulating inbound traffic, CAC reduction, and cross-domain analytics.")
     
@@ -239,13 +245,12 @@ elif role == "📊 Merchant Hub":
 # ==========================================
 # VIEW 4: ABOUT THE TEAM
 # ==========================================
-elif role == "👥 About the Team":
+with tab_team:
     st.header("👥 Meet the Curato Team")
     st.write("We are a group of five PGDM candidates at **ICFAI Business School (IBS) Hyderabad**. Curato was conceptualized and developed as an academic prototype for our **Managing Platform Business** course.")
     
     st.markdown("---")
     
-    # Row 1: 3 Members with LinkedIn placehoders
     c1, c2, c3 = st.columns(3)
     with c1:
         st.info("🎯 **Harsh Choudhary**\n\n*Team Lead & Platform Strategist*\n\n[🔗 Connect on LinkedIn](https://www.linkedin.com/in/harsh-choudhary-040291208/)")
@@ -256,7 +261,6 @@ elif role == "👥 About the Team":
         
     st.markdown("<br>", unsafe_allow_html=True)
     
-    # Row 2: 2 Members
     spacer1, c4, c5, spacer2 = st.columns([1, 2, 2, 1])
     with c4:
         st.info("🎨 **[Anjali Gupta]**\n\n*UI/UX & Consumer Psychology*\n\n[🔗 Connect on LinkedIn](https://www.linkedin.com/in/anjali-gupta-80851026b?utm_source=share_via&utm_content=profile&utm_medium=member_android)")

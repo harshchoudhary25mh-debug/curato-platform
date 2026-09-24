@@ -15,7 +15,7 @@ if "user_likes" not in st.session_state:
 
 # --- Navigation Sidebar ---
 with st.sidebar:
-    # --- Custom Brand Logo Injection (Strictly ONE Logo) ---
+    # --- Custom Brand Logo Injection ---
     st.markdown("""
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&display=swap" rel="stylesheet">
     <div style="display: flex; align-items: center; justify-content: center; padding: 1rem 0 1.5rem 0;">
@@ -24,14 +24,37 @@ with st.sidebar:
     """, unsafe_allow_html=True)
     
     st.markdown("---")
-    role = st.radio("Access Portal:", ["📱 Consumer Feed", "📊 Merchant Hub"])
+    role = st.radio("Navigation:", ["🏠 Platform Home", "📱 Consumer Feed", "📊 Merchant Hub", "👥 About the Team"])
     st.markdown("---")
-    st.caption("MPB Project Prototype • v9.1 (Visual Overhaul)")
+    st.caption("MPB Project Prototype • Final Build")
 
 # ==========================================
-# VIEW 1: TRUE AI CONSUMER DISCOVERY
+# VIEW 1: PLATFORM HOME (LANDING PAGE)
 # ==========================================
-if role == "📱 Consumer Feed":
+if role == "🏠 Platform Home":
+    st.header("Welcome to the 'Everything' Discovery Engine")
+    st.write("Curato is a hyper-personalized, two-sided AI matchmaking platform designed to eliminate choice overload for consumers while radically lowering Customer Acquisition Cost (CAC) for merchants.")
+    
+    st.markdown("---")
+    
+    col1, col2 = st.columns(2)
+    with col1:
+        with st.container(border=True):
+            st.markdown("### 🛍️ The Consumer Problem")
+            st.write("Modern shoppers suffer from **choice fatigue**. Finding the right venue, the right outfit, and the right gift requires bouncing between multiple distinct apps. Curato centralizes intent into a single, vibe-based search.")
+    
+    with col2:
+        with st.container(border=True):
+            st.markdown("### 📈 The Merchant Problem")
+            st.write("Independent D2C brands face **unsustainable ad costs** on traditional search engines and social media. Curato offers a frictionless freemium SaaS model, matching merchants directly to high-intent buyers.")
+            
+    st.markdown("---")
+    st.info("👈 **Use the sidebar to explore the Consumer Feed or the Merchant Analytics Hub.**")
+
+# ==========================================
+# VIEW 2: TRUE AI CONSUMER DISCOVERY
+# ==========================================
+elif role == "📱 Consumer Feed":
     st.header("✨ Infinite AI Discovery Feed")
     st.write("Search for anything from movie night to event planning. Use filters only if you need them.")
     
@@ -153,7 +176,7 @@ if role == "📱 Consumer Feed":
         st.info(f"**Total Estimated Value: ₹{total_cost}**")
 
 # ==========================================
-# VIEW 2: MERCHANT ANALYTICS HUB
+# VIEW 3: MERCHANT ANALYTICS HUB
 # ==========================================
 elif role == "📊 Merchant Hub":
     st.header("📈 Merchant Partner Dashboard")
@@ -181,7 +204,6 @@ elif role == "📊 Merchant Hub":
         index=["Also looking for Indie Music", "Planning a trip/event", "Buying Tech Gadgets", "Ordering North Indian Food"],
         columns=["Audience Overlap %"]
     )
-    # Chart color matched to the Coral theme
     st.bar_chart(chart_data, color="#FF6B6B") 
     
     st.markdown("---")
@@ -213,3 +235,33 @@ elif role == "📊 Merchant Hub":
         "Take-Rate (5%) Paid": ["₹1,250", "₹890", "₹2,100", "₹450"]
     })
     st.dataframe(merchant_catalog, use_container_width=True, hide_index=True)
+
+# ==========================================
+# VIEW 4: ABOUT THE TEAM
+# ==========================================
+elif role == "👥 About the Team":
+    st.header("👥 Meet the Curato Team")
+    st.write("We are a group of five PGDM candidates at **ICFAI Business School (IBS) Hyderabad**. Curato was conceptualized and developed as an academic prototype for our **Managing Platform Business** course.")
+    
+    st.markdown("---")
+    
+    # Row 1: 3 Members with LinkedIn placehoders
+    c1, c2, c3 = st.columns(3)
+    with c1:
+        st.info("🎯 **Harsh Choudhary**\n\n*Team Lead & Platform Strategist*\n\n[🔗 Connect on LinkedIn](https://www.linkedin.com/in/harsh-choudhary-040291208/)")
+    with c2:
+        st.info("💻 **[Bhavya Bajpai]**\n\n*Product Manager*\n\n[🔗 Connect on LinkedIn](https://www.linkedin.com/in/bhavya-bajpai-1ab399377)")
+    with c3:
+        st.info("🤝 **[Vanshika Saxena]**\n\n*B2B Merchant Ecosystem*\n\n[🔗 Connect on LinkedIn](https://www.linkedin.com/in/vanshika-saxena-070bb3212?utm_source=share_via&utm_content=profile&utm_medium=member_android)")
+        
+    st.markdown("<br>", unsafe_allow_html=True)
+    
+    # Row 2: 2 Members
+    spacer1, c4, c5, spacer2 = st.columns([1, 2, 2, 1])
+    with c4:
+        st.info("🎨 **[Anjali Gupta]**\n\n*UI/UX & Consumer Psychology*\n\n[🔗 Connect on LinkedIn](https://www.linkedin.com/in/anjali-gupta-80851026b?utm_source=share_via&utm_content=profile&utm_medium=member_android)")
+    with c5:
+        st.info("⚙️ **[Pooja Mohta]**\n\n*Platform Operations*\n\n[🔗 Connect on LinkedIn](https://www.linkedin.com/in/pooja-mohta-9415201ab/)")
+        
+    st.markdown("---")
+    st.caption("Built with Python, Streamlit, and Google Gemini AI.")
